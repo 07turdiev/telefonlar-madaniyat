@@ -53,10 +53,14 @@ def parse_docx(path: Path) -> tuple[dict[int, str], list[tuple[str, list[dict]]]
         for row in table.rows:
             cells = row.cells  # birlashgan katak har ustunda takrorlanadi
             texts = [_cell_text(c, " ") for c in cells]
-            matched = [i for i, t in enumerate(texts) if _match_field(t)]
+            distinct = {id(c._tc): t for c, t in zip(cells, texts) if t}
+            fields = {f for t in distinct.values() if (f := _match_field(t))}
+            spans_row = len({id(c._tc) for c in cells}) == 1
 
             # Sarlavha qatori (ketma-ket ikki qator bo'lsa, matnlar ustun bo'yicha qo'shiladi).
-            if len(matched) >= 2 or (header_texts is not None and matched):
+            # Butun qator bo'ylab birlashgan katak sarlavha emas, bo'lim nomi: "Ichki audit bo'limi",
+            # "Devonxona" kabi nomlardagi so'zlar ustun nomiga o'xshab qolmasin.
+            if not spans_row and (len(fields) >= 2 or (header_texts is not None and fields)):
                 header_texts = header_texts or {}
                 for i, t in enumerate(texts):
                     header_texts[i] = f"{header_texts.get(i, '')} {t}".strip()
@@ -70,7 +74,6 @@ def parse_docx(path: Path) -> tuple[dict[int, str], list[tuple[str, list[dict]]]
             if not columns:
                 continue
 
-            distinct = {id(c._tc): t for c, t in zip(cells, texts) if t}
             if not distinct:
                 continue
             if len(set(distinct.values())) == 1:
