@@ -8,6 +8,8 @@ export interface Employee {
   city_phone: string
   mobile_phone: string
   email: string
+  /** Vakant o'rin: F.I.Sh. "Vakant", lavozimdan boshqa maydonlar bo'sh va "-" ko'rsatiladi. */
+  is_vacant: boolean
   sort_order: number
   updated_at: string
 }

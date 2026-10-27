@@ -13,7 +13,17 @@ from openpyxl.styles import Alignment, Font, PatternFill
 from pydantic import BaseModel
 
 from app.auth import MIN_PASSWORD_LENGTH, hash_password
-from app.db import EMPLOYEE_FIELDS, department_tree, directory, log, move, next_sort_order, now
+from app.db import (
+    EMPLOYEE_FIELDS,
+    VACANT_CLEARED,
+    VACANT_NAME,
+    department_tree,
+    directory,
+    log,
+    move,
+    next_sort_order,
+    now,
+)
 from app.deps import admin_user, current_user, get_db, user_out
 
 router = APIRouter(prefix="/api/admin", dependencies=[Depends(current_user)])
@@ -28,7 +38,9 @@ LABELS = {
     "mobile_phone": "mobil",
     "email": "e-mail",
     "department_id": "bo'lim",
+    "is_vacant": "vakant",
 }
+EMPLOYEE_COLUMNS = [*EMPLOYEE_FIELDS, "department_id", "is_vacant"]
 USERNAME_RE = re.compile(r"[A-Za-z0-9._-]{3,32}")
 EMAIL_RE = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 INTERNAL_PHONE_RE = re.compile(r"\d{4}")
@@ -44,6 +56,7 @@ class EmployeeIn(BaseModel):
     city_phone: str = ""
     mobile_phone: str = ""
     email: str = ""
+    is_vacant: bool = False
 
 
 class DepartmentIn(BaseModel):
@@ -92,7 +105,13 @@ def department_names(db) -> dict[int, str]:
 def _validated_employee(data: EmployeeIn, db) -> dict:
     values = {field: clean(getattr(data, field)) for field in EMPLOYEE_FIELDS}
     values["department_id"] = data.department_id
+    values["is_vacant"] = int(data.is_vacant)
     errors = {}
+    if data.is_vacant:
+        values["full_name"] = VACANT_NAME
+        values.update({field: "" for field in VACANT_CLEARED})
+        if not values["position"]:
+            errors["position"] = "Vakant o'rin uchun lavozimni kiriting."
     if not values["full_name"]:
         errors["full_name"] = "F.I.Sh. kiritilishi shart."
     if values["internal_phone"] and not INTERNAL_PHONE_RE.fullmatch(values["internal_phone"]):
@@ -116,11 +135,10 @@ def admin_directory(db=Depends(get_db)):
 @router.post("/employees", status_code=201)
 def employee_create(data: EmployeeIn, db=Depends(get_db), user=Depends(current_user)):
     values = _validated_employee(data, db)
-    columns = [*EMPLOYEE_FIELDS, "department_id"]
     cursor = db.execute(
-        f"INSERT INTO employees ({', '.join(columns)}, sort_order, updated_at)"
-        f" VALUES ({', '.join('?' * len(columns))}, ?, ?)",
-        [values[c] for c in columns]
+        f"INSERT INTO employees ({', '.join(EMPLOYEE_COLUMNS)}, sort_order, updated_at)"
+        f" VALUES ({', '.join('?' * len(EMPLOYEE_COLUMNS))}, ?, ?)",
+        [values[c] for c in EMPLOYEE_COLUMNS]
         + [next_sort_order(db, "employees", "department_id", values["department_id"]), now()],
     )
     dept = department_names(db)[values["department_id"]]
@@ -143,6 +161,8 @@ def employee_update(
         if old != new:
             if field == "department_id":
                 old, new = names.get(old, "?"), names[new]
+            elif field == "is_vacant":
+                old, new = ("ha" if old else "yo'q"), ("ha" if new else "yo'q")
             changes.append(f"{label}: «{old}» → «{new}»")
     if not changes:
         return dict(employee)
@@ -150,11 +170,10 @@ def employee_update(
     sort_order = employee["sort_order"]
     if values["department_id"] != employee["department_id"]:
         sort_order = next_sort_order(db, "employees", "department_id", values["department_id"])
-    columns = [*EMPLOYEE_FIELDS, "department_id"]
     db.execute(
-        f"UPDATE employees SET {', '.join(f'{c} = ?' for c in columns)},"
+        f"UPDATE employees SET {', '.join(f'{c} = ?' for c in EMPLOYEE_COLUMNS)},"
         " sort_order = ?, updated_at = ? WHERE id = ?",
-        [values[c] for c in columns] + [sort_order, now(), employee_id],
+        [values[c] for c in EMPLOYEE_COLUMNS] + [sort_order, now(), employee_id],
     )
     log(db, user["username"], "hodim o'zgartirildi", f"{employee['full_name']}: " + "; ".join(changes))
     db.commit()
@@ -353,7 +372,10 @@ def export_xlsx(db=Depends(get_db)):
         cell.fill = PatternFill("solid", fgColor="DDE6F0")
     for section in directory(db):
         for emp in section["employees"]:
-            ws.append([section["name"], *(emp[f] for f in EMPLOYEE_FIELDS)])
+            vacant = emp["is_vacant"]
+            ws.append(
+                [section["name"], *("-" if vacant and f in VACANT_CLEARED else emp[f] for f in EMPLOYEE_FIELDS)]
+            )
     for column, width in zip("ABCDEFGH", (34, 34, 40, 8, 10, 16, 18, 28)):
         ws.column_dimensions[column].width = width
     for row in ws.iter_rows(min_row=2):

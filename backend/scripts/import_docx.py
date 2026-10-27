@@ -17,6 +17,8 @@ from pathlib import Path
 
 from docx import Document
 
+from app.db import VACANT_CLEARED, VACANT_NAME
+
 COLUMN_KEYWORDS = {
     "full_name": ("f.i.sh", "ф.и.ш", "fish", "фиш", "f.i.o", "ф.и.о", "фио", "familiya", "фамилия"),
     "position": ("lavozim", "лавозим", "должност"),
@@ -91,6 +93,11 @@ def parse_docx(path: Path) -> tuple[dict[int, str], list[tuple[str, list[dict]]]
             # Ichki raqam: faqat bitta 4 xonali raqam ("1000 68-11" → "1000").
             four_digits = INTERNAL_PHONE_RE.search(employee["internal_phone"])
             employee["internal_phone"] = four_digits.group(0) if four_digits else ""
+            # "Vakant" qatori: lavozimdan boshqa maydonlar kerak emas.
+            employee["is_vacant"] = employee["full_name"].lower().startswith("vakant")
+            if employee["is_vacant"]:
+                employee["full_name"] = VACANT_NAME
+                employee.update({field: "" for field in VACANT_CLEARED})
             if not employee["full_name"]:
                 continue
             if not sections:
@@ -109,7 +116,7 @@ def save(conn, sections: list[tuple[str, list[dict]]], replace: bool) -> None:
     if replace:
         conn.execute("DELETE FROM employees")
         conn.execute("DELETE FROM departments")
-    columns = [*EMPLOYEE_FIELDS, "department_id", "sort_order", "updated_at"]
+    columns = [*EMPLOYEE_FIELDS, "is_vacant", "department_id", "sort_order", "updated_at"]
     for dept_order, (name, employees) in enumerate(sections, start=1):
         dept_id = conn.execute(
             "INSERT INTO departments (name, parent_id, sort_order) VALUES (?, NULL, ?)",
@@ -118,7 +125,8 @@ def save(conn, sections: list[tuple[str, list[dict]]], replace: bool) -> None:
         for emp_order, emp in enumerate(employees, start=1):
             conn.execute(
                 f"INSERT INTO employees ({', '.join(columns)}) VALUES ({', '.join('?' * len(columns))})",
-                [emp[f][:200] for f in EMPLOYEE_FIELDS] + [dept_id, emp_order, now()],
+                [emp[f][:200] for f in EMPLOYEE_FIELDS]
+                + [int(emp["is_vacant"]), dept_id, emp_order, now()],
             )
     total = sum(len(e) for _, e in sections)
     log(conn, "konsol", "Word'dan import", f"{len(sections)} bo'lim, {total} hodim")

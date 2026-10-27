@@ -132,6 +132,31 @@ def test_internal_phone_is_single_four_digit_number(hr):
     assert [e["internal_phone"] for e in hr.get("/api/directory").json()["sections"][0]["employees"]] == ["1290", ""]
 
 
+def test_vacant_position(hr):
+    dept = create_department(hr, "Moliya")
+    r = hr.post("/api/admin/employees", json={"department_id": dept, "is_vacant": True})
+    assert set(r.json()["detail"]["errors"]) == {"position"}  # vakant o'rinda lavozim shart
+
+    emp = create_employee(
+        hr, dept, "", position="Bosh mutaxassis", is_vacant=True,
+        internal_phone="1234", city_phone="71 200-00-00", mobile_phone="90 111-22-33", email="a@b.uz",
+    )
+    e = hr.get("/api/directory").json()["sections"][0]["employees"][0]
+    assert (e["is_vacant"], e["full_name"], e["position"]) == (True, "Vakant", "Bosh mutaxassis")
+    assert [e[f] for f in ("room", "internal_phone", "city_phone", "mobile_phone", "email")] == [""] * 5
+
+    ws = load_workbook(BytesIO(hr.get("/api/admin/export.xlsx").content)).active
+    assert [c.value for c in ws[2]] == ["Moliya", "Vakant", "Bosh mutaxassis", "-", "-", "-", "-", "-"]
+
+    # Lavozimga odam tayinlandi: vakant belgisi olinadi, F.I.Sh. kerak bo'ladi
+    body = {"department_id": dept, "position": "Bosh mutaxassis", "is_vacant": False, "full_name": ""}
+    assert set(hr.put(f"/api/admin/employees/{emp}", json=body).json()["detail"]["errors"]) == {"full_name"}
+    hr.put(f"/api/admin/employees/{emp}", json={**body, "full_name": "Aliyev Ali", "internal_phone": "1234"})
+    e = hr.get("/api/directory").json()["sections"][0]["employees"][0]
+    assert (e["is_vacant"], e["full_name"], e["internal_phone"]) == (False, "Aliyev Ali", "1234")
+    assert "vakant: «ha» → «yo'q»" in hr.get("/api/admin/log").json()[0]["details"]
+
+
 def test_employee_update_logs_changes(hr):
     finance = create_department(hr, "Moliya")
     legal = create_department(hr, "Yuridik")

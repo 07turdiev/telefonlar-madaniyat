@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS employees (
     city_phone     TEXT    NOT NULL DEFAULT '',
     mobile_phone   TEXT    NOT NULL DEFAULT '',
     email          TEXT    NOT NULL DEFAULT '',
+    is_vacant      INTEGER NOT NULL DEFAULT 0,
     sort_order     INTEGER NOT NULL DEFAULT 0,
     updated_at     TEXT    NOT NULL
 );
@@ -49,6 +50,10 @@ CREATE TABLE IF NOT EXISTS audit_log (
 """
 
 ACCOUNT_ACTIONS = ("foydalanuvchi qo'shildi", "foydalanuvchi o'chirildi", "parol almashtirildi")
+
+# Vakant o'rin: F.I.Sh. o'rniga shu so'z, lavozimdan boshqa maydonlar bo'sh (ekranda "-").
+VACANT_NAME = "Vakant"
+VACANT_CLEARED = ("room", "internal_phone", "city_phone", "mobile_phone", "email")
 
 EMPLOYEE_FIELDS = (
     "full_name",
@@ -85,6 +90,10 @@ def init_db(path: Path) -> None:
     try:
         conn.execute("PRAGMA journal_mode = WAL")
         conn.executescript(SCHEMA)
+        # Avvalgi versiyada yaratilgan bazaga yangi ustunlar.
+        columns = {r["name"] for r in conn.execute("PRAGMA table_info(employees)")}
+        if "is_vacant" not in columns:
+            conn.execute("ALTER TABLE employees ADD COLUMN is_vacant INTEGER NOT NULL DEFAULT 0")
         conn.commit()
     finally:
         conn.close()
@@ -119,7 +128,9 @@ def directory(conn: sqlite3.Connection, include_empty: bool = False) -> list[dic
     for row in conn.execute(
         "SELECT * FROM employees ORDER BY department_id, sort_order, id"
     ):
-        employees.setdefault(row["department_id"], []).append(dict(row))
+        employees.setdefault(row["department_id"], []).append(
+            {**dict(row), "is_vacant": bool(row["is_vacant"])}
+        )
     tree = department_tree(conn)
     sections = [{**dept, "employees": employees.get(dept["id"], [])} for dept in tree]
     if include_empty:
