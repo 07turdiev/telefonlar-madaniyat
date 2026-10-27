@@ -96,6 +96,17 @@ sudo nginx -t && sudo systemctl reload nginx
 
 **Muhim:** `nginx.conf` dagi `allow` qatorlarida faqat xodimlar tarmog'i (VLAN) bo'lsin. Mehmonlar Wi-Fi
 tarmog'i ham ichki manzil oladi; uni qo'shib qo'ysangiz, begonalar hodimlarning mobil raqamlarini ko'radi.
+Server oldida teskari proksi (HTTPS uchun) tursa, nginx hamma tashrifchini proksi manzili bilan ko'radi va
+`allow` cheklovi ishlamaydi. Bunday holda saytni proksi orqali o'tmaydigan alohida portda oching va proksi
+manzilini `deny` qiling.
+
+### Yangilash
+
+GitHub'ga yangi versiya yuklangandan keyin serverda:
+
+```bash
+cd <loyiha papkasi> && bash deploy/update.sh
+```
 
 ### Zaxira nusxa
 
