@@ -30,7 +30,7 @@ const cell = (value: string) => ['emp-cell', !value && 'hidden lg:table-cell pri
       </colgroup>
       <thead class="hidden bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500 lg:table-header-group print:table-header-group print:bg-white print:text-black">
         <tr>
-          <th class="px-4 py-2.5 font-medium print:px-2 print:py-1"><span class="print:hidden">F.I.Sh. va lavozimi</span></th>
+          <th class="px-4 py-2.5 font-medium print:px-2 print:py-1"><span class="print:hidden">F.I.Sh</span></th>
           <th v-if="show('room')" class="px-3 py-2.5 font-medium print:px-2 print:py-1">Xona</th>
           <th v-if="show('internal_phone')" class="px-3 py-2.5 font-medium print:px-2 print:py-1">Ichki</th>
           <th v-if="show('city_phone')" class="px-3 py-2.5 font-medium print:px-2 print:py-1">Shahar tel.</th>
