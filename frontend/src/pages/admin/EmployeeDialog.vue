@@ -33,6 +33,13 @@ const busy = ref(false)
 const isNew = computed(() => !props.employee)
 const nameInput = ref<HTMLInputElement>()
 
+// Ichki raqam: faqat raqamlar, ko'pi bilan 4 ta (harf, tire, bo'shliq yozilmaydi).
+function onInternalInput(event: Event) {
+  const input = event.target as HTMLInputElement
+  input.value = input.value.replace(/\D/g, '').slice(0, 4)
+  form.internal_phone = input.value
+}
+
 async function save(addAnother = false) {
   busy.value = true
   errors.value = {}
@@ -82,8 +89,18 @@ async function save(addAnother = false) {
       <FormField label="Lavozimi" for="f-position" class="sm:col-span-2">
         <input id="f-position" v-model="form.position" class="input" maxlength="200" placeholder="Bo'lim boshlig'i" />
       </FormField>
-      <FormField label="Ichki telefon" for="f-internal" hint="Bir nechta bo'lsa vergul bilan: 215, 216">
-        <input id="f-internal" v-model="form.internal_phone" class="input" maxlength="200" inputmode="tel" />
+      <FormField label="Ichki telefon" for="f-internal" :error="errors.internal_phone" hint="4 xonali raqam, masalan 1290">
+        <input
+          id="f-internal"
+          :value="form.internal_phone"
+          class="input tabular-nums"
+          :class="{ 'input-error': errors.internal_phone }"
+          maxlength="4"
+          inputmode="numeric"
+          placeholder="1290"
+          autocomplete="off"
+          @input="onInternalInput"
+        />
       </FormField>
       <FormField label="Xona" for="f-room">
         <input id="f-room" v-model="form.room" class="input" maxlength="200" placeholder="305" />

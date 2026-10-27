@@ -20,7 +20,7 @@ const cell = (value: string) => ['emp-cell', !value && 'hidden lg:table-cell pri
       <colgroup class="hidden lg:table-column-group print:table-column-group">
         <col />
         <col v-if="show('room')" class="w-20 print:w-12" />
-        <col v-if="show('internal_phone')" class="w-24 print:w-16" />
+        <col v-if="show('internal_phone')" class="w-20 print:w-12" />
         <col v-if="show('city_phone')" class="w-40 print:w-28" />
         <col v-if="show('mobile_phone')" class="w-36 print:w-28" />
         <col v-if="show('email')" class="w-52 print:w-36" />
@@ -54,13 +54,7 @@ const cell = (value: string) => ['emp-cell', !value && 'hidden lg:table-cell pri
           </td>
           <td v-if="show('internal_phone')" :class="cell(e.internal_phone)">
             <span class="emp-label">Ichki</span>
-            <span class="flex flex-col">
-              <span
-                v-for="n in splitValues(e.internal_phone)"
-                :key="n"
-                class="phone text-base font-semibold leading-snug text-brand-700 print:text-[10pt] print:text-black"
-              >{{ n }}</span>
-            </span>
+            <span class="phone text-base font-semibold text-brand-700 print:text-[10pt] print:text-black">{{ e.internal_phone }}</span>
           </td>
           <td v-if="show('city_phone')" :class="cell(e.city_phone)">
             <span class="emp-label">Shahar</span>

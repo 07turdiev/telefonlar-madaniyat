@@ -21,16 +21,16 @@ def make_docx(path):
     row("", "", "", "", "Ички", "Мобил")
     dept = row("Rahbariyat", "", "", "", "", "")
     dept[0].merge(dept[5]).text = "Rahbariyat"
-    row("1", "Karimov Anvar\nAliyevich", "Vazir", "201", "100", "90 123 45 67")
-    row("2", "Toshmatova Gulnora", "Vazir o'rinbosari", "203", "101\n102", "")
+    row("1", "Karimov Anvar\nAliyevich", "Vazir", "201", "1000", "90 123 45 67")
+    row("2", "Toshmatova Gulnora", "Vazir o'rinbosari", "203", "1001\n57-89", "")  # haqiqiy faylda shunday
     dept = row("", "", "", "", "", "")
     dept[0].merge(dept[5]).text = "Moliya bo'limi"
-    row("3", "Rahimov Bobur", "Bosh hisobchi", "310", "150", "")
+    row("3", "Rahimov Bobur", "Bosh hisobchi", "310", "1500", "")
     # Nomida ustun kalit so'zi bor bo'limlar ("ichki", "xona") sarlavha deb olinmasligi kerak.
     for name, person in (("Ichki audit bo'limi", "Aliyev Ali"), ("Ijro intizomi va devonxona bo'limi", "Valiyeva Vali")):
         dept = row("", "", "", "", "", "")
         dept[0].merge(dept[5]).text = name
-        row("4", person, "Bosh mutaxassis", "401", "160", "")
+        row("4", person, "Bosh mutaxassis", "401", "1600", "")
     doc.save(path)
 
 
@@ -48,11 +48,12 @@ def test_parse_docx(tmp_path):
     first, second = sections[0][1]
     assert first["full_name"] == "Karimov Anvar Aliyevich"
     assert first["mobile_phone"] == "90 123 45 67"
-    assert second["internal_phone"] == "101, 102"
+    assert first["internal_phone"] == "1000"
+    assert second["internal_phone"] == "1001"  # tire bilan yozilgan qo'shimcha raqam olinmaydi
     audit = sections[2][1][0]
-    assert (audit["full_name"], audit["room"], audit["internal_phone"]) == ("Aliyev Ali", "401", "160")
+    assert (audit["full_name"], audit["room"], audit["internal_phone"]) == ("Aliyev Ali", "401", "1600")
     devon = sections[3][1][0]
-    assert (devon["full_name"], devon["position"], devon["internal_phone"]) == ("Valiyeva Vali", "Bosh mutaxassis", "160")
+    assert (devon["full_name"], devon["position"], devon["internal_phone"]) == ("Valiyeva Vali", "Bosh mutaxassis", "1600")
 
 
 def test_save_refuses_to_overwrite(tmp_path, db):

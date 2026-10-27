@@ -32,8 +32,8 @@ def test_directory_is_public_and_hides_empty_departments(hr):
     culture = create_department(hr, "Madaniyat boshqarmasi")
     create_department(hr, "Bo'sh bo'lim")
     theatre = create_department(hr, "Teatr bo'limi", parent_id=culture)
-    create_employee(hr, leaders, "Karimov Anvar", position="Vazir", internal_phone="100")
-    create_employee(hr, theatre, "Aliyeva Dilnoza", internal_phone="215", room="305")
+    create_employee(hr, leaders, "Karimov Anvar", position="Vazir", internal_phone="1000")
+    create_employee(hr, theatre, "Aliyeva Dilnoza", internal_phone="1215", room="305")
 
     hr.post("/api/auth/logout")
     assert hr.get("/api/auth/me").status_code == 401
@@ -122,19 +122,29 @@ def test_employee_validation(hr):
     assert set(r.json()["detail"]["errors"]) == {"department_id"}
 
 
+def test_internal_phone_is_single_four_digit_number(hr):
+    dept = create_department(hr, "Moliya")
+    for bad in ("1000, 68-11", "68-11", "123", "12345", "12a4"):
+        r = hr.post("/api/admin/employees", json={"department_id": dept, "full_name": "Ali", "internal_phone": bad})
+        assert set(r.json()["detail"]["errors"]) == {"internal_phone"}, bad
+    create_employee(hr, dept, "Ali", internal_phone=" 1290 ")
+    create_employee(hr, dept, "Vali", internal_phone="")  # bo'sh qoldirish mumkin
+    assert [e["internal_phone"] for e in hr.get("/api/directory").json()["sections"][0]["employees"]] == ["1290", ""]
+
+
 def test_employee_update_logs_changes(hr):
     finance = create_department(hr, "Moliya")
     legal = create_department(hr, "Yuridik")
-    emp = create_employee(hr, finance, "Karimov  Anvar", internal_phone="123")
+    emp = create_employee(hr, finance, "Karimov  Anvar", internal_phone="1230")
     r = hr.put(
         f"/api/admin/employees/{emp}",
-        json={"department_id": legal, "full_name": "Karimov Anvar", "internal_phone": "125"},
+        json={"department_id": legal, "full_name": "Karimov Anvar", "internal_phone": "1250"},
     )
     assert r.status_code == 200
     assert r.json()["full_name"] == "Karimov Anvar"
     entry = hr.get("/api/admin/log").json()[0]
     assert entry["username"] == "kadrlar"
-    assert "«123» → «125»" in entry["details"]
+    assert "«1230» → «1250»" in entry["details"]
     assert "«Moliya» → «Yuridik»" in entry["details"]
 
 
@@ -224,8 +234,8 @@ def test_admin_resets_password(admin, db):
 
 def test_export_xlsx(hr):
     dept = create_department(hr, "Moliya")
-    create_employee(hr, dept, "Karimov Anvar", position="Bosh hisobchi", internal_phone="123")
+    create_employee(hr, dept, "Karimov Anvar", position="Bosh hisobchi", internal_phone="1230")
     r = hr.get("/api/admin/export.xlsx")
     assert r.status_code == 200
     ws = load_workbook(BytesIO(r.content)).active
-    assert [c.value for c in ws[2]][:5] == ["Moliya", "Karimov Anvar", "Bosh hisobchi", None, "123"]
+    assert [c.value for c in ws[2]][:5] == ["Moliya", "Karimov Anvar", "Bosh hisobchi", None, "1230"]

@@ -27,6 +27,7 @@ COLUMN_KEYWORDS = {
     "email": ("mail", "почта", "pochta"),
 }
 NO_DEPARTMENT = "Bo'lim ko'rsatilmagan"
+INTERNAL_PHONE_RE = re.compile(r"(?<!\d)\d{4}(?!\d)")
 
 
 def _cell_text(cell, multiline_sep: str) -> str:
@@ -87,6 +88,9 @@ def parse_docx(path: Path) -> tuple[dict[int, str], list[tuple[str, list[dict]]]
                 if i < len(cells):
                     sep = " " if field in ("full_name", "position") else ", "
                     employee[field] = _cell_text(cells[i], sep)
+            # Ichki raqam: faqat bitta 4 xonali raqam ("1000 68-11" → "1000").
+            four_digits = INTERNAL_PHONE_RE.search(employee["internal_phone"])
+            employee["internal_phone"] = four_digits.group(0) if four_digits else ""
             if not employee["full_name"]:
                 continue
             if not sections:

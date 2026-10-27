@@ -31,6 +31,7 @@ LABELS = {
 }
 USERNAME_RE = re.compile(r"[A-Za-z0-9._-]{3,32}")
 EMAIL_RE = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
+INTERNAL_PHONE_RE = re.compile(r"\d{4}")
 PASSWORD_ERROR = f"Parol kamida {MIN_PASSWORD_LENGTH} belgidan iborat bo'lsin."
 
 
@@ -94,6 +95,8 @@ def _validated_employee(data: EmployeeIn, db) -> dict:
     errors = {}
     if not values["full_name"]:
         errors["full_name"] = "F.I.Sh. kiritilishi shart."
+    if values["internal_phone"] and not INTERNAL_PHONE_RE.fullmatch(values["internal_phone"]):
+        errors["internal_phone"] = "Ichki raqam bitta 4 xonali raqam bo'lsin, masalan 1290."
     if values["email"] and not EMAIL_RE.fullmatch(values["email"]):
         errors["email"] = "E-mail manzili noto'g'ri yozilgan."
     if data.department_id is None or not db.execute(

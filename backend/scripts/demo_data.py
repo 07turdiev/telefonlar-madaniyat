@@ -11,35 +11,35 @@ from app.db import connect, init_db, log, now
 # (bo'lim, yuqori bo'lim yoki None, [(F.I.Sh., lavozim, xona, ichki, shahar, mobil, e-mail), ...])
 DEMO = [
     ("Vazirlik rahbariyati", None, [
-        ("Abdullayev Rustam Karimovich", "Vazir", "201", "100", "71 239-17-00", "", "vazir@example.uz"),
-        ("Yusupova Malika Bahodirovna", "Vazirning birinchi o'rinbosari", "203", "101", "71 239-17-01", "", ""),
-        ("Qodirov Sherzod Anvarovich", "Vazir o'rinbosari", "205", "102", "71 239-17-02", "", ""),
+        ("Abdullayev Rustam Karimovich", "Vazir", "201", "1100", "71 239-17-00", "", "vazir@example.uz"),
+        ("Yusupova Malika Bahodirovna", "Vazirning birinchi o'rinbosari", "203", "1101", "71 239-17-01", "", ""),
+        ("Qodirov Sherzod Anvarovich", "Vazir o'rinbosari", "205", "1102", "71 239-17-02", "", ""),
     ]),
     ("Devonxona", None, [
-        ("Nazarova Dilfuza Olimovna", "Devonxona mudiri", "110", "120", "71 239-17-20", "90 111-22-33", "devon@example.uz"),
-        ("Ergashev Bobur Tohirovich", "Bosh mutaxassis", "111", "121", "", "", ""),
+        ("Nazarova Dilfuza Olimovna", "Devonxona mudiri", "110", "1120", "71 239-17-20", "90 111-22-33", "devon@example.uz"),
+        ("Ergashev Bobur Tohirovich", "Bosh mutaxassis", "111", "1121", "", "", ""),
     ]),
     ("Madaniyat siyosati boshqarmasi", None, [
-        ("Hamidov Jasur Rahimovich", "Boshqarma boshlig'i", "301", "200", "71 239-17-30", "", ""),
+        ("Hamidov Jasur Rahimovich", "Boshqarma boshlig'i", "301", "1200", "71 239-17-30", "", ""),
     ]),
     ("Teatr san'ati bo'limi", "Madaniyat siyosati boshqarmasi", [
-        ("Saidova Nodira Ilhomovna", "Bo'lim boshlig'i", "305", "215", "", "93 222-33-44", "teatr@example.uz"),
-        ("G'aniyev Otabek Shuhratovich", "Yetakchi mutaxassis", "306", "216", "", "", ""),
+        ("Saidova Nodira Ilhomovna", "Bo'lim boshlig'i", "305", "1215", "", "93 222-33-44", "teatr@example.uz"),
+        ("G'aniyev Otabek Shuhratovich", "Yetakchi mutaxassis", "306", "1216", "", "", ""),
     ]),
     ("Musiqa san'ati bo'limi", "Madaniyat siyosati boshqarmasi", [
-        ("Xolmatova Shahnoza Erkinovna", "Bo'lim boshlig'i", "310", "220", "", "", "musiqa@example.uz"),
-        ("To'xtayev Sardor Ravshanovich", "Bosh mutaxassis", "311", "221, 222", "", "", ""),
+        ("Xolmatova Shahnoza Erkinovna", "Bo'lim boshlig'i", "310", "1220", "", "", "musiqa@example.uz"),
+        ("To'xtayev Sardor Ravshanovich", "Bosh mutaxassis", "311", "1221", "", "", ""),
     ]),
     ("Moliya-iqtisodiyot bo'limi", None, [
-        ("Rahimova Gulnora Abdullayevna", "Bosh hisobchi", "401", "300", "71 239-17-40", "", "moliya@example.uz"),
-        ("Mirzayev Azizbek Ulug'bekovich", "Iqtisodchi", "402", "301", "", "", ""),
+        ("Rahimova Gulnora Abdullayevna", "Bosh hisobchi", "401", "1300", "71 239-17-40", "", "moliya@example.uz"),
+        ("Mirzayev Azizbek Ulug'bekovich", "Iqtisodchi", "402", "1301", "", "", ""),
     ]),
     ("Kadrlar bo'limi", None, [
-        ("Tursunova Feruza Hamidovna", "Bo'lim boshlig'i", "120", "130", "71 239-17-13", "", "kadrlar@example.uz"),
+        ("Tursunova Feruza Hamidovna", "Bo'lim boshlig'i", "120", "1130", "71 239-17-13", "", "kadrlar@example.uz"),
     ]),
     ("Axborot-kommunikatsiya texnologiyalari bo'limi", None, [
-        ("Karimov Jahongir Farhodovich", "Bo'lim boshlig'i", "501", "400", "", "97 333-44-55", "akt@example.uz"),
-        ("Ismoilov Doniyor Akmalovich", "Tizim administratori", "502", "401", "", "", ""),
+        ("Karimov Jahongir Farhodovich", "Bo'lim boshlig'i", "501", "1400", "", "97 333-44-55", "akt@example.uz"),
+        ("Ismoilov Doniyor Akmalovich", "Tizim administratori", "502", "1401", "", "", ""),
     ]),
 ]
 
