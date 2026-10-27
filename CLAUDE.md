@@ -12,6 +12,11 @@ Madaniyat vazirligi hodimlarining ichki telefon ma'lumotnomasi. Umumiy tavsif, i
 - Eski ro'yxat Word (.docx) faylda, `backend/scripts/import_docx.py` orqali import. Haqiqiy fayl hali ko'rilmagan:
   u kelganda importni shu faylda tekshirish kerak.
 
+- Ma'lumotnomada markaziy apparatning BARCHA xodimlari (xizmat ko'rsatuvchilar ham) bo'ladi; raqami yo'qlarda maydon bo'sh.
+  Bo'limlar ERP bo'limlariga to'liq mos emas: referent-kotiblar o'z rahbari bilan turadi (ERP'da "Xizmat ko'rsatuvchi").
+- ERP eksporti (`*.xlsx`, JShShIR bor) va ATS eksporti (`*.csv`, SIP parollari bor) repoga ham, serverga ham yuborilmaydi.
+  Ular bilan ishlaganda faqat kerakli maydonlar (ism, lavozim, raqam) chiqariladi.
+
 ## Texnik tuzilma
 
 - `backend/`: Python 3.11+, FastAPI, SQLite (`sqlite3` standart moduli, ORM yo'q). Ilova `app.main:create_app` (factory).

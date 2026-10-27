@@ -9,5 +9,8 @@ __pycache__/
 frontend/node_modules/
 frontend/dist/
 
-# Eski Word ma'lumotnoma (hodimlarning shaxsiy raqamlari bor)
+# Manba fayllar: hodimlarning shaxsiy ma'lumotlari, ATS eksportida SIP parollari bor. Repo public!
 *.docx
+*.xlsx
+*.xls
+*.csv
