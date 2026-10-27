@@ -73,4 +73,9 @@
   body {
     @apply bg-white text-[10pt];
   }
+  /* Chop etilgan jadval: har bir katak aniq ko'rinadigan qora chiziq bilan */
+  .emp-table th,
+  .emp-table td {
+    border: 1px solid #000;
+  }
 }

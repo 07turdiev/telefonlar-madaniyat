@@ -14,21 +14,22 @@ const cell = (value: string) => ['emp-cell', !value && 'hidden lg:table-cell pri
 </script>
 
 <template>
-  <div class="card overflow-hidden print:overflow-visible print:rounded-none print:border-slate-400 print:shadow-none">
-    <!-- table-fixed: hamma bo'lim jadvallarida ustunlar bir xil tekislanadi -->
-    <table class="block w-full text-sm lg:table lg:table-fixed print:table print:table-fixed">
+  <div class="card overflow-hidden print:overflow-visible print:rounded-none print:border-0 print:shadow-none">
+    <!-- table-fixed: hamma bo'lim jadvallarida ustunlar bir xil tekislanadi.
+         emp-table: chop etishda har bir katak qora chiziq bilan o'raladi (style.css). -->
+    <table class="emp-table block w-full text-sm lg:table lg:table-fixed print:table print:table-fixed">
       <colgroup class="hidden lg:table-column-group print:table-column-group">
         <col />
-        <col v-if="show('room')" class="w-20 print:w-12" />
-        <col v-if="show('internal_phone')" class="w-20 print:w-12" />
-        <col v-if="show('city_phone')" class="w-40 print:w-28" />
-        <col v-if="show('mobile_phone')" class="w-36 print:w-28" />
-        <col v-if="show('email')" class="w-52 print:w-36" />
+        <col v-if="show('room')" class="w-20 print:w-[9%]" />
+        <col v-if="show('internal_phone')" class="w-20 print:w-[12%]" />
+        <col v-if="show('city_phone')" class="w-40 print:w-[20%]" />
+        <col v-if="show('mobile_phone')" class="w-36 print:w-[18%]" />
+        <col v-if="show('email')" class="w-52 print:w-[22%]" />
         <col v-if="$slots.actions" class="w-36 print:hidden" />
       </colgroup>
-      <thead class="hidden bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500 lg:table-header-group print:table-header-group print:bg-white print:text-slate-700">
+      <thead class="hidden bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500 lg:table-header-group print:table-header-group print:bg-white print:text-black">
         <tr>
-          <th class="px-4 py-2.5 font-medium print:px-2 print:py-1">F.I.Sh. va lavozimi</th>
+          <th class="px-4 py-2.5 font-medium print:px-2 print:py-1"><span class="print:hidden">F.I.Sh. va lavozimi</span></th>
           <th v-if="show('room')" class="px-3 py-2.5 font-medium print:px-2 print:py-1">Xona</th>
           <th v-if="show('internal_phone')" class="px-3 py-2.5 font-medium print:px-2 print:py-1">Ichki</th>
           <th v-if="show('city_phone')" class="px-3 py-2.5 font-medium print:px-2 print:py-1">Shahar tel.</th>
@@ -37,7 +38,7 @@ const cell = (value: string) => ['emp-cell', !value && 'hidden lg:table-cell pri
           <th v-if="$slots.actions" class="print:hidden"><span class="sr-only">Amallar</span></th>
         </tr>
       </thead>
-      <tbody class="block divide-y divide-slate-100 lg:table-row-group print:table-row-group print:divide-slate-300">
+      <tbody class="block divide-y divide-slate-100 lg:table-row-group print:table-row-group print:divide-y-0">
         <tr
           v-for="(e, i) in employees"
           :id="`emp-${e.id}`"
@@ -45,7 +46,7 @@ const cell = (value: string) => ['emp-cell', !value && 'hidden lg:table-cell pri
           class="block break-inside-avoid px-4 py-3 transition-colors hover:bg-brand-50/50 lg:table-row lg:p-0 print:table-row"
         >
           <td class="block pb-1 lg:table-cell lg:px-4 lg:py-2.5 print:table-cell print:px-2 print:py-1">
-            <div class="font-medium text-slate-900">{{ e.full_name }}</div>
+            <div class="font-medium text-slate-900 print:text-[11pt] print:font-semibold print:text-black">{{ e.full_name }}</div>
             <div v-if="e.position" class="text-[13px] leading-snug text-slate-500 print:text-slate-700">{{ e.position }}</div>
           </td>
           <td v-if="show('room')" :class="cell(e.room)">
