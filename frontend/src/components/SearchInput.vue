@@ -38,7 +38,7 @@ defineExpose({ focus: () => input.value?.focus() })
       v-if="model"
       type="button"
       class="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:text-slate-700"
-      aria-label="Tozalash"
+      aria-label="Qidiruvni tozalash"
       @click="model = ''; input?.focus()"
     >
       <AppIcon name="x" class="h-4 w-4" />

@@ -90,12 +90,17 @@ onMounted(load)
           class="flex-1"
           placeholder="Ism, lavozim, bo'lim yoki raqam"
         />
-        <select v-model="departmentId" class="input h-11 sm:w-80" aria-label="Bo'lim">
-          <option :value="null">Barcha bo'limlar</option>
-          <option v-for="s in sections" :key="s.id" :value="s.id">
-            {{ s.level ? '    ' : '' }}{{ s.name }}
-          </option>
-        </select>
+        <div class="flex gap-2">
+          <select v-model="departmentId" class="input h-11 min-w-0 flex-1 sm:w-80 sm:flex-none" aria-label="Bo'lim">
+            <option :value="null">Barcha bo'limlar</option>
+            <option v-for="s in sections" :key="s.id" :value="s.id">
+              {{ s.level ? '    ' : '' }}{{ s.name }}
+            </option>
+          </select>
+          <button type="button" class="btn-secondary h-11 shrink-0" :disabled="!active" title="Qidiruv va bo'lim filtrini tozalash" @click="reset">
+            <AppIcon name="x" class="h-4 w-4" /> Tozalash
+          </button>
+        </div>
       </div>
     </div>
 
@@ -118,7 +123,6 @@ onMounted(load)
         <p class="mb-4 text-sm text-slate-500 print:hidden">
           <template v-if="active">
             Topildi: <b class="text-slate-800">{{ count }}</b> ta hodim (jami {{ total }})
-            <button v-if="count" class="ml-2 text-brand-700 hover:underline" @click="reset">Filtrni tozalash</button>
           </template>
           <template v-else>Jami {{ total }} ta hodim</template>
         </p>

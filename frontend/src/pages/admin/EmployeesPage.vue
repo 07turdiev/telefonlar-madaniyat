@@ -34,6 +34,11 @@ async function load() {
   }
 }
 
+function reset() {
+  query.value = ''
+  departmentId.value = null
+}
+
 function openNew(deptId: number | null = departmentId.value) {
   presetDepartment.value = deptId
   editing.value = null
@@ -81,12 +86,17 @@ onMounted(load)
 
     <div class="mb-6 flex flex-col gap-2 sm:flex-row">
       <SearchInput v-model="query" class="flex-1" placeholder="Ism, lavozim, bo'lim yoki raqam" />
-      <select v-model="departmentId" class="input h-11 sm:w-80" aria-label="Bo'lim">
-        <option :value="null">Barcha bo'limlar</option>
-        <option v-for="s in sections" :key="s.id" :value="s.id">
-          {{ s.level ? '    ' : '' }}{{ s.name }}
-        </option>
-      </select>
+      <div class="flex gap-2">
+        <select v-model="departmentId" class="input h-11 min-w-0 flex-1 sm:w-80 sm:flex-none" aria-label="Bo'lim">
+          <option :value="null">Barcha bo'limlar</option>
+          <option v-for="s in sections" :key="s.id" :value="s.id">
+            {{ s.level ? '    ' : '' }}{{ s.name }}
+          </option>
+        </select>
+        <button type="button" class="btn-secondary h-11 shrink-0" :disabled="!active" title="Qidiruv va bo'lim filtrini tozalash" @click="reset">
+          <AppIcon name="x" class="h-4 w-4" /> Tozalash
+        </button>
+      </div>
     </div>
 
     <div v-if="loading" class="space-y-3">
