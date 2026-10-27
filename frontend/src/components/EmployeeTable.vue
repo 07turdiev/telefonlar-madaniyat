@@ -19,12 +19,13 @@ const cell = (value: string) => ['emp-cell', !value && 'hidden lg:table-cell pri
          emp-table: chop etishda har bir katak qora chiziq bilan o'raladi (style.css). -->
     <table class="emp-table block w-full text-sm lg:table lg:table-fixed print:table print:table-fixed">
       <colgroup class="hidden lg:table-column-group print:table-column-group">
-        <col />
-        <col v-if="show('room')" class="w-20 print:w-[9%]" />
-        <col v-if="show('internal_phone')" class="w-20 print:w-[12%]" />
-        <col v-if="show('city_phone')" class="w-40 print:w-[20%]" />
-        <col v-if="show('mobile_phone')" class="w-36 print:w-[18%]" />
-        <col v-if="show('email')" class="w-52 print:w-[22%]" />
+        <!-- Chop etishda F.I.Sh. doim 42%, ichki 10%; qolgan ustunlar qolgan joyni teng bo'lishadi -->
+        <col class="print:w-[42%]" />
+        <col v-if="show('room')" class="w-20 print:w-[7%]" />
+        <col v-if="show('internal_phone')" class="w-20 print:w-[10%]" />
+        <col v-if="show('city_phone')" class="w-40 print:w-auto" />
+        <col v-if="show('mobile_phone')" class="w-36 print:w-auto" />
+        <col v-if="show('email')" class="w-52 print:w-auto" />
         <col v-if="$slots.actions" class="w-36 print:hidden" />
       </colgroup>
       <thead class="hidden bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500 lg:table-header-group print:table-header-group print:bg-white print:text-black">
