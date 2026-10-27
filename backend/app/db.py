@@ -1,8 +1,11 @@
 """SQLite ulanishi, sxema va umumiy so'rovlar."""
 
+import os
 import sqlite3
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS departments (
@@ -58,8 +61,14 @@ EMPLOYEE_FIELDS = (
 )
 
 
+@lru_cache
+def _timezone() -> ZoneInfo:
+    # Server UTC'da bo'lsa ham vaqt Toshkent bo'yicha yoziladi (TIMEZONE bilan o'zgartirish mumkin).
+    return ZoneInfo(os.environ.get("TIMEZONE", "Asia/Tashkent"))
+
+
 def now() -> str:
-    return datetime.now().isoformat(timespec="seconds")
+    return datetime.now(_timezone()).replace(tzinfo=None).isoformat(timespec="seconds")
 
 
 def connect(path: Path) -> sqlite3.Connection:
