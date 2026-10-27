@@ -2,12 +2,12 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, errorMessage } from '@/api'
+import AccordionSection from '@/components/AccordionSection.vue'
 import AppIcon from '@/components/AppIcon.vue'
 import EmployeeTable from '@/components/EmployeeTable.vue'
 import SearchInput from '@/components/SearchInput.vue'
-import SectionHeading from '@/components/SectionHeading.vue'
 import { useDirectoryFilter } from '@/composables/useDirectoryFilter'
-import type { Directory } from '@/types'
+import type { Directory, Section } from '@/types'
 import { usedColumns } from '@/utils/columns'
 import { formatDateTime } from '@/utils/format'
 
@@ -28,6 +28,37 @@ watch([query, departmentId], ([q, b]) => {
 const sections = computed(() => data.value?.sections ?? [])
 const { filtered, count, total, active, parentNameFor } = useDirectoryFilter(sections, query, departmentId)
 const columns = computed(() => usedColumns(sections.value))
+
+// Akkordeon: bo'limlar yopiq turadi, bosilganda ochiladi.
+// Qidiruv yoki bo'lim tanlanganda topilgan bo'limlar o'zi ochiladi, filtr tozalansa yana yopiladi.
+const openIds = ref(new Set<number>())
+watch([filtered, active], ([list, isActive]) => {
+  openIds.value = isActive ? new Set(list.map((s) => s.id)) : new Set()
+})
+const isOpen = (s: Section) => openIds.value.has(s.id)
+
+function toggle(s: Section) {
+  const next = new Set(openIds.value)
+  if (!next.delete(s.id)) next.add(s.id)
+  openIds.value = next
+}
+
+const allOpen = computed(() => filtered.value.length > 0 && filtered.value.every(isOpen))
+function toggleAll() {
+  openIds.value = allOpen.value ? new Set() : new Set(filtered.value.map((s) => s.id))
+}
+
+/** Ichki bo'lim yuqori bo'limi yopiq bo'lsa ko'rinmaydi (chop etishda ko'rinadi). */
+function hiddenUnderParent(s: Section) {
+  const parent = s.parent_id ? filtered.value.find((p) => p.id === s.parent_id) : undefined
+  return parent !== undefined && !isOpen(parent)
+}
+
+/** Sarlavhadagi son: bo'limning o'zi va ichki bo'limlaridagi hodimlar. */
+function sectionCount(s: Section) {
+  const children = filtered.value.filter((c) => c.parent_id === s.id)
+  return children.reduce((n, c) => n + c.employees.length, s.employees.length)
+}
 
 async function load() {
   loading.value = true
@@ -120,12 +151,17 @@ onMounted(load)
       </div>
 
       <template v-else>
-        <p class="mb-4 text-sm text-slate-500 print:hidden">
-          <template v-if="active">
-            Topildi: <b class="text-slate-800">{{ count }}</b> ta hodim (jami {{ total }})
-          </template>
-          <template v-else>Jami {{ total }} ta hodim</template>
-        </p>
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-2 text-sm text-slate-500 print:hidden">
+          <p>
+            <template v-if="active">
+              Topildi: <b class="text-slate-800">{{ count }}</b> ta hodim (jami {{ total }})
+            </template>
+            <template v-else>Jami {{ total }} ta hodim, {{ filtered.length }} ta bo'lim</template>
+          </p>
+          <button v-if="count" type="button" class="font-medium text-brand-700 hover:underline" @click="toggleAll">
+            {{ allOpen ? 'Barchasini yopish' : 'Barchasini ochish' }}
+          </button>
+        </div>
 
         <div v-if="!count" class="card mx-auto max-w-md p-8 text-center">
           <AppIcon name="search" class="mx-auto mb-3 h-8 w-8 text-slate-300" />
@@ -134,15 +170,22 @@ onMounted(load)
           <button class="btn-secondary" @click="reset">Filtrni tozalash</button>
         </div>
 
-        <section
-          v-for="s in filtered"
-          :key="s.id"
-          :class="s.level === 0 ? 'pt-6 first:pt-0' : 'pt-3'"
-          class="print:break-inside-auto"
-        >
-          <SectionHeading :section="s" :parent-name="parentNameFor(s)" />
-          <EmployeeTable v-if="s.employees.length" :employees="s.employees" :columns="columns" />
-        </section>
+        <div class="space-y-2 print:space-y-4">
+          <AccordionSection
+            v-for="s in filtered"
+            :id="s.id"
+            :key="s.id"
+            :title="s.name"
+            :level="s.level"
+            :parent-name="parentNameFor(s)"
+            :count="sectionCount(s)"
+            :open="isOpen(s)"
+            :class="hiddenUnderParent(s) && 'hidden print:block'"
+            @toggle="toggle(s)"
+          >
+            <EmployeeTable v-if="s.employees.length" :employees="s.employees" :columns="columns" />
+          </AccordionSection>
+        </div>
       </template>
     </main>
 
