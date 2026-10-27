@@ -7,6 +7,7 @@ Madaniyat vazirligi hodimlarining ichki telefon ma'lumotnomasi. Umumiy tavsif, i
 - Ko'rish parolsiz, faqat ichki tarmoqdan (cheklov nginx'da, `deploy/nginx.conf`). Login faqat kadrlar bo'limi uchun.
 - Maydonlar: F.I.Sh., lavozim, bo'lim, xona, ichki tel., shahar tel., mobil, e-mail.
 - Ichki raqam: faqat bitta 4 xonali raqam yoki bo'sh ("68-11" kabi qo'shimcha raqamlar kerak emas). Backend, forma va import shuni tekshiradi.
+- Vakant o'rin (`employees.is_vacant`): F.I.Sh. "Vakant", lavozim majburiy, qolgan BARCHA maydonlar (ichki va shahar tel. ham) bo'sh va hamma joyda "-" ko'rsatiladi.
 - Server: Linux (nginx + systemd). Frontend Vue'da (foydalanuvchi so'rovi).
 - Eski ro'yxat Word (.docx) faylda, `backend/scripts/import_docx.py` orqali import. Haqiqiy fayl hali ko'rilmagan:
   u kelganda importni shu faylda tekshirish kerak.
