@@ -1,0 +1,13 @@
+# Python
+backend/.venv/
+backend/.env
+backend/data/
+__pycache__/
+.pytest_cache/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Eski Word ma'lumotnoma (hodimlarning shaxsiy raqamlari bor)
+*.docx

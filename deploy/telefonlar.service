@@ -1,0 +1,25 @@
+# /etc/systemd/system/telefonlar.service
+# O'rnatish: README.md, "Serverga o'rnatish" bo'limi.
+[Unit]
+Description=Telefon ma'lumotnomasi (API)
+After=network.target
+
+[Service]
+User=telefonlar
+Group=telefonlar
+WorkingDirectory=/opt/telefonlar/backend
+# Sozlamalar backend/.env faylidan o'qiladi (app/config.py).
+# Bitta worker: login urinishlari hisoblagichi xotirada turadi, SQLite uchun ham shu yetarli.
+ExecStart=/opt/telefonlar/backend/.venv/bin/uvicorn --factory app.main:create_app \
+    --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=on-failure
+RestartSec=3
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/telefonlar/backend/data
+
+[Install]
+WantedBy=multi-user.target
