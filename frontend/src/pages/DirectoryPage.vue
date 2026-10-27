@@ -146,7 +146,7 @@ onMounted(load)
       <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-4 text-sm text-slate-500">
         <span v-if="data?.updated">Oxirgi yangilanish: {{ formatDateTime(data.updated) }}</span>
         <span v-else />
-        <RouterLink to="/admin" class="hover:text-brand-700 hover:underline">Kadrlar bo'limi uchun kirish</RouterLink>
+        <RouterLink to="/admin" class="hover:text-brand-700 hover:underline">Kirish</RouterLink>
       </div>
     </footer>
   </div>

@@ -39,7 +39,7 @@ async function submit() {
           <AppIcon name="phone" class="h-7 w-7" />
         </div>
         <h1 class="text-xl font-semibold">Telefon ma'lumotnomasi</h1>
-        <p class="text-sm text-brand-100">Kadrlar bo'limi uchun kirish</p>
+        <p class="text-sm text-brand-100">kirish</p>
       </div>
 
       <form class="card space-y-4 p-6" @submit.prevent="submit">
