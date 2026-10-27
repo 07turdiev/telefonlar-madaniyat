@@ -8,6 +8,7 @@ import SectionHeading from '@/components/SectionHeading.vue'
 import { useDirectoryFilter } from '@/composables/useDirectoryFilter'
 import { useToastStore } from '@/stores/toast'
 import type { Employee, Section } from '@/types'
+import { usedColumns } from '@/utils/columns'
 import EmployeeDialog from './EmployeeDialog.vue'
 
 const toast = useToastStore()
@@ -16,6 +17,7 @@ const loading = ref(true)
 const query = ref('')
 const departmentId = ref<number | null>(null)
 const { filtered, count, total, active, parentNameFor } = useDirectoryFilter(sections, query, departmentId, true)
+const columns = computed(() => usedColumns(sections.value))
 
 // Dialog: undefined — yopiq, null — yangi hodim, Employee — tahrirlash.
 const editing = ref<Employee | null | undefined>(undefined)
@@ -78,7 +80,7 @@ onMounted(load)
     </div>
 
     <div class="mb-6 flex flex-col gap-2 sm:flex-row">
-      <SearchInput v-model="query" class="flex-1" placeholder="Ism, lavozim, xona yoki raqam" />
+      <SearchInput v-model="query" class="flex-1" placeholder="Ism, lavozim, bo'lim yoki raqam" />
       <select v-model="departmentId" class="input h-11 sm:w-80" aria-label="Bo'lim">
         <option :value="null">Barcha bo'limlar</option>
         <option v-for="s in sections" :key="s.id" :value="s.id">
@@ -112,7 +114,7 @@ onMounted(load)
             <AppIcon name="plus" class="h-3.5 w-3.5" /> Qo'shish
           </button>
         </SectionHeading>
-        <EmployeeTable v-if="s.employees.length" :employees="s.employees">
+        <EmployeeTable v-if="s.employees.length" :employees="s.employees" :columns="columns">
           <template #actions="{ employee, index, last }">
             <button class="icon-btn" title="Yuqoriga" :disabled="searching || index === 0" @click="moveEmployee(employee, 'up')">
               <AppIcon name="up" class="h-4 w-4" />

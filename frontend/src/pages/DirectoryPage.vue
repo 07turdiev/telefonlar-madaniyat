@@ -8,6 +8,7 @@ import SearchInput from '@/components/SearchInput.vue'
 import SectionHeading from '@/components/SectionHeading.vue'
 import { useDirectoryFilter } from '@/composables/useDirectoryFilter'
 import type { Directory } from '@/types'
+import { usedColumns } from '@/utils/columns'
 import { formatDateTime } from '@/utils/format'
 
 const route = useRoute()
@@ -26,6 +27,7 @@ watch([query, departmentId], ([q, b]) => {
 
 const sections = computed(() => data.value?.sections ?? [])
 const { filtered, count, total, active, parentNameFor } = useDirectoryFilter(sections, query, departmentId)
+const columns = computed(() => usedColumns(sections.value))
 
 async function load() {
   loading.value = true
@@ -86,7 +88,7 @@ onMounted(load)
         <SearchInput
           v-model="query"
           class="flex-1"
-          placeholder="Ism, lavozim, xona yoki telefon raqami bo'yicha qidiring"
+          placeholder="Ism, lavozim, bo'lim yoki raqam"
         />
         <select v-model="departmentId" class="input h-11 sm:w-80" aria-label="Bo'lim">
           <option :value="null">Barcha bo'limlar</option>
@@ -135,7 +137,7 @@ onMounted(load)
           class="print:break-inside-auto"
         >
           <SectionHeading :section="s" :parent-name="parentNameFor(s)" />
-          <EmployeeTable v-if="s.employees.length" :employees="s.employees" />
+          <EmployeeTable v-if="s.employees.length" :employees="s.employees" :columns="columns" />
         </section>
       </template>
     </main>
