@@ -23,13 +23,13 @@ const cell = (e: Employee, key: ColumnKey) => [
          emp-table: chop etishda har bir katak qora chiziq bilan o'raladi (style.css). -->
     <table class="emp-table block w-full text-sm lg:table lg:table-fixed print:table print:table-fixed">
       <colgroup class="hidden lg:table-column-group print:table-column-group">
-        <!-- Chop etishda F.I.Sh. doim 42%; e-mail eng uzun qiymat, unga ko'proq joy -->
-        <col class="print:w-[42%]" />
+        <!-- Chop etish: to'liq e-mail (eng uzuni ~29 belgi) 8pt shriftda bir qatorga sig'ishi uchun 25% -->
+        <col class="print:w-[40%]" />
         <col v-if="show('room')" class="w-20 print:w-[7%]" />
-        <col v-if="show('internal_phone')" class="w-20 print:w-[9%]" />
-        <col v-if="show('city_phone')" class="w-40 print:w-[15%]" />
+        <col v-if="show('internal_phone')" class="w-20 print:w-[8%]" />
+        <col v-if="show('city_phone')" class="w-40 print:w-[14%]" />
         <col v-if="show('mobile_phone')" class="w-36 print:w-[13%]" />
-        <col v-if="show('email')" class="w-56 print:w-[21%]" />
+        <col v-if="show('email')" class="w-56 print:w-[25%]" />
         <col v-if="$slots.actions" class="w-36 print:hidden" />
       </colgroup>
       <thead class="hidden bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500 lg:table-header-group print:table-header-group print:bg-white print:text-black">
@@ -94,7 +94,7 @@ const cell = (e: Employee, key: ColumnKey) => [
             <a
               v-else-if="e.email"
               :href="`mailto:${e.email}`"
-              class="text-brand-700 [overflow-wrap:anywhere] hover:underline print:text-[9pt] print:text-black"
+              class="text-brand-700 [overflow-wrap:anywhere] hover:underline print:text-[8pt] print:text-black"
             >{{ e.email.split('@')[0] }}<wbr />@{{ e.email.split('@').slice(1).join('@') }}</a>
           </td>
           <td v-if="$slots.actions" class="flex justify-end gap-0.5 pt-2 lg:table-cell lg:whitespace-nowrap lg:px-2 lg:py-1.5 lg:text-right print:hidden">
