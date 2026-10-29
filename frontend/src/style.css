@@ -72,6 +72,10 @@
   @page {
     size: A4;
     margin: 12mm 10mm;
+    /* Bo'sh margin box: brauzer yuqori chetga sana va sahifa nomini chiqarmaydi */
+    @top-center {
+      content: '';
+    }
   }
   html,
   body {
